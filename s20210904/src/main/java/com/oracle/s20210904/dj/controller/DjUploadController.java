@@ -12,15 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,7 +41,9 @@ public class DjUploadController {
 				@RequestParam(value="comId1") String comId1) 
 		
 		throws Exception{
-//			String uploadPath = request.getSession().getServletContext().getRealPath("/upload/");
+			
+			String uploadinDB = null;
+			
 			String uploadPath = request.getSession().getServletContext().getRealPath("/upload/");
 			System.out.println("생성 시 uploadPath->"+uploadPath);
 			//업로드 경로를 만든다. 메타데이터 아래에 경로를 둔다. 가장 아래에 upload라는 폴더를 만들고 거기에 파일을 둔다.
@@ -56,13 +56,51 @@ public class DjUploadController {
 			logger.info("size: " + file1.getSize());//사진의 용량
 			logger.info("contentType: " + file1.getContentType());//사진의 타입
 			logger.info("uploadPath: " + file1); //업로드 경로
-														
-			String uploadinDB = uploadFile(file1.getOriginalFilename(),file1.getBytes(),uploadPath,comId1);
-			logger.info("uploadinDB: "+uploadinDB);
 			
-			// model.addAttribute("savedName", savedName);
-			//model.addAttribute("comId1", comId1);
+			//검증. 만약에 이미 db에 올려져 있는 자료가 있다 -> 가져온 값이 Null->아래 과정 정상 진행하기
+			//								 -> 가져온 값이 있다 -> 삭제 진행 후 진행하기	왜냐면 그게 이미 물리 폴더에 있을테니까 삭제하고 새로 넣는 식으로 구현함
+			// 이 짓을 왜 하나?-> 이것을 안하면 /upload/폴더에 물리적으로 파일이 계속 쌓임
+		
+			String IsitNull = null;
+			IsitNull = das.nullconfirm(comId1);
+			System.out.println("(컨트롤러) 이미지가 Null인지 확인합니다.->"+IsitNull);
+			//널이 아니고 값을 가져왔다면 해당 이미지의 이름(경로)일 것이다.
+			
+			//이를 통해서 업로드 시에는 null인 
+			if(IsitNull == null) {
+				 //(여기부터 본격 업로드 시작)
+															
+				uploadinDB = uploadFile(file1.getOriginalFilename(),file1.getBytes(),uploadPath,comId1);
+				logger.info("uploadinDB: "+uploadinDB);
+				
+				// model.addAttribute("savedName", savedName);
+				//model.addAttribute("comId1", comId1);
+				
+				
+			} else if (IsitNull != null) {
+				//검사했는데 널이 아니면 delete 메서드를 호출해서 삭제를 진행한다.
+				
+				String return1 = null;
+				// id가 comId1인 곳의 이미지를 삭제하겠다.->db를 null로 만들고 파일을 삭제함
+				return1=uploadFileDelete(request, model,IsitNull);
+				
+				System.out.println("return1->"+return1);
+				System.out.println("return1이 String 맞음?->"+ return1 instanceof String);
+	
+				
+				//if(return1=="1") {
+				if(return1.equals("1")) {
+					
+					uploadinDB = uploadFile(file1.getOriginalFilename(),file1.getBytes(),uploadPath,comId1);
+					logger.info("equals -->삭제 후 작업한 db의 이미지 내용이다 - uploadinDB: "+uploadinDB);
+					
+				} else if(return1 != "1") {
+					System.out.println("DB->company->com_img에 있는 정보가 삭제되지 않았거나 무언가 문제가 발생함");
+				}
+			}
+			
 			return uploadinDB;
+           
 		}	
 	
 		//uploadForm에서 호출하는 메소드이다.원래이름,용량,경로를 받아 처리한다.
@@ -166,45 +204,33 @@ public class DjUploadController {
 			return result;
 		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		@RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
-		@ResponseBody
-		public ResponseEntity<?> uploadFile(
-		    @RequestParam("uploadfile") MultipartFile uploadfile) {
-		  System.out.println("이건되냐안되냐아1111111111111111111111111111");
-		  try {
-		    // Get the filename and build the local file path (be sure that the 
-		    // application have write permissions on such directory)
-		    String filename = uploadfile.getOriginalFilename();
-		    String directory = "/var/netgloo_blog/uploads";
-		    String filepath = Paths.get(directory, filename).toString();
-		    
-		    // Save the file locally
-		    BufferedOutputStream stream =
-		        new BufferedOutputStream(new FileOutputStream(new File(filepath)));
-		    stream.write(uploadfile.getBytes());
-		    stream.close();
-		  }
-		  catch (Exception e) {
-		    System.out.println(e.getMessage());
-		    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		  }
-		  
-		  return new ResponseEntity<>(HttpStatus.OK);
-		} // method uploadFile
-		
+			
+//		
+//		@RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
+//		@ResponseBody
+//		public ResponseEntity<?> uploadFile(
+//		    @RequestParam("uploadfile") MultipartFile uploadfile) {
+//		  System.out.println("이건되냐안되냐아1111111111111111111111111111");
+//		  try {
+//		    // Get the filename and build the local file path (be sure that the 
+//		    // application have write permissions on such directory)
+//		    String filename = uploadfile.getOriginalFilename();
+//		    String directory = "/var/netgloo_blog/uploads";
+//		    String filepath = Paths.get(directory, filename).toString();
+//		    
+//		    // Save the file locally
+//		    BufferedOutputStream stream =
+//		        new BufferedOutputStream(new FileOutputStream(new File(filepath)));
+//		    stream.write(uploadfile.getBytes());
+//		    stream.close();
+//		  }
+//		  catch (Exception e) {
+//		    System.out.println(e.getMessage());
+//		    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//		  }
+//		  
+//		  return new ResponseEntity<>(HttpStatus.OK);
+//		} // method uploadFile
+//		
 
 }

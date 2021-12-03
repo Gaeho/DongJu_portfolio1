@@ -109,6 +109,7 @@ function uploadFile() {
 	     /*  $('input[name=com_img11]').attr('src',data); */
 	     	alert("도대체 뭔가 들어있긴 하니?->"+data)
 	    	document.getElementById('imagesquare1').src=data;
+	    	document.getElementById('imagesquare1').value=data;
 	    	
 	    },
 	    error: function () {

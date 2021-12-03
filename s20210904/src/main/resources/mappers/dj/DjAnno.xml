@@ -85,5 +85,11 @@
 		set com_img = null
 		where com_img = #{imgpath11}	
 	</update>
+	
+	<select id="DjComImgConfirm" parameterType="java.lang.String" resultType="java.lang.String">
+		select com_img
+		from Company
+		where com_id = #{comId1}
+	</select>
 
 </mapper>

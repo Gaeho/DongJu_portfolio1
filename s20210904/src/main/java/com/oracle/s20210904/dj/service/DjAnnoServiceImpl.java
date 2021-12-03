@@ -19,7 +19,7 @@ private DjAnnoDao dad;
 
 @Override
 public Company comInfoList(String com_id) {
-	System.out.println("DjAnnoServiceImpl의 annoList1 시작되었습니다. ");
+	System.out.println("DjAnnoServiceImpl의 annoList1() 시작되었습니다. ");
 	Company comp1 = dad.comInfoList(com_id);
 	
 	System.out.println("comp1안에 뭔가 들어있니? 회사명?->"+comp1.getCom_id());
@@ -30,7 +30,7 @@ public Company comInfoList(String com_id) {
 
 @Override
 public List<Comm> mainCatList1() {
-	System.out.println("DjAnnoServiceImpl의 mainCatList1 시작되었습니다.");
+	System.out.println("DjAnnoServiceImpl의 mainCatList1() 시작되었습니다.");
 	
 	List<Comm> mainCat001 = dad.mainCatList1();
 	System.out.println("(서비스)리스트 mainCat001에는 무엇이 들었나? ->"+mainCat001.size());
@@ -40,7 +40,7 @@ public List<Comm> mainCatList1() {
 
 @Override
 public List<Comm> mainCatList2() {
-	System.out.println("DjAnnoServiceImpl의 mainCatList2 시작되었습니다.");
+	System.out.println("DjAnnoServiceImpl의 mainCatList2() 시작되었습니다.");
 	
 	List<Comm> mainCat002 = dad.mainCatList2();
 	System.out.println("(서비스)리스트 mainCat002에는 무엇이 들었나? ->"+mainCat002.size());
@@ -50,7 +50,7 @@ public List<Comm> mainCatList2() {
 
 @Override
 public List<Comm> mainCatList() {
-System.out.println("DjAnnoServiceImpl의 mainCatList 시작되었습니다.");
+System.out.println("DjAnnoServiceImpl의 mainCatList() 시작되었습니다.");
 	
 	List<Comm> mainCat = dad.mainCatList();
 	System.out.println("(서비스)리스트 mainCat에는 무엇이 들었나? ->"+mainCat.size());
@@ -60,7 +60,7 @@ System.out.println("DjAnnoServiceImpl의 mainCatList 시작되었습니다.");
 
 @Override
 public void annoWriting(Announce anno) {
-	System.out.println("DjAnnoServiceImpl의 annoWriting 시작했습니다.");
+	System.out.println("DjAnnoServiceImpl의 annoWriting() 시작했습니다.");
 	
 	dad.annoWriting(anno);
 	
@@ -68,17 +68,24 @@ public void annoWriting(Announce anno) {
 
 @Override
 public int insertComImg(Company comp) {
-	System.out.println("DjAnnoServiceImpl의 insertComImg 시작되었습니다.");
+	System.out.println("DjAnnoServiceImpl의 insertComImg() 시작되었습니다.");
 	
 	return dad.insertComImg(comp);
 }
 
 @Override
 public int imgDel(String imgpath11) {
-	System.out.println("DjAnnoServiceImpl의 imgDel 시작되었습니다.");
+	System.out.println("DjAnnoServiceImpl의 imgDel() 시작되었습니다.");
 	
 	
 	return dad.imgDel(imgpath11);
+}
+
+@Override
+public String nullconfirm(String comId1) {
+	System.out.println("DjAnnoServiceImpl의 nullconfirm() 시작되었습니다.");
+	
+	return dad.nullconfirm(comId1);
 }
 
 

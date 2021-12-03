@@ -22,4 +22,6 @@ public interface DjAnnoDao {
 
 	int imgDel(String imgpath11);
 
+	String nullconfirm(String comId1);
+
 }

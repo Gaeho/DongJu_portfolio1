@@ -143,6 +143,21 @@ public class DjAnnoDaoImpl implements DjAnnoDao {
 		
 		return resultofDelete;
 	}
+
+	@Override
+	public String nullconfirm(String comId1) {
+		
+		String IsitNull = null;
+		try {
+			IsitNull=session.selectOne("DjComImgConfirm", comId1);
+			System.out.println("nullconfirm() 에서 IsitNull내용 확인->"+IsitNull);
+		} catch (Exception e) {
+			System.out.println("DjAnnoDaoImpl의 nullconfirm에서 예외가 발생했습니다."+e.getMessage());
+		}
+		System.out.println("nullconfirm() 에서 IsitNull내용 최종 확인->"+IsitNull);
+
+		return IsitNull;
+	}
 	
 	
 }
